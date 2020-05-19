@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include "adjacency.h"
+
+int main() {
+
+    adjmat mat;
+
+    /*Create the tree*/
+    createMatrix(mat);
+
+    printMatrix(mat);
+
+    /*Get the indexes from the user and check path*/
+    getIndexes(mat);
+    return 0;
+}
+
+/*
+ * The function get adjmat matrix and print the values
+ */
+void printMatrix(adjmat adj) {
+    int i, j;
+
+    printf("The created matrix is:\n");
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; ++j) {
+            printf("%d", adj[i][j]);
+        }
+        printf("\n");
+    }
+
+}
+
+/*The function create the tree matrix from the user input values*/
+void createMatrix(adjmat adj) {
+    int i, j;
+
+    printf("Please enter %d numbers to represent the tree\n", N * N);
+
+    /*Go through the matrix and insert values according the user inputs*/
+    for (i = 0; i < N; i++) {
+        printf("Please enter %d values for row number %d: \n", N, i);
+        for (j = 0; j < N; j++) {
+            scanf("%d", &adj[i][j]);
+        }
+    }
+}
+
+/*The function get two index's and check there validation - in the matrix range*/
+int checkInRange(int i, int j) {
+    return (i >= MIN_VALUE && i < N) && (j >= MIN_VALUE && j < N);
+
+}
+
+/*The function get the index values from the user and check if there is path between them*/
+void getIndexes(adjmat mat) {
+    int u, v;
+    printf("Enter 2 indexes to check if there is path between them\n");
+    /*Get index's while the user input represent two valid index's*/
+    while (scanf("%d", &u) == 1 && scanf("%d", &v) == 1 &&
+           (u != INVALID_VALUE || v != INVALID_VALUE)) {
+
+        /*Create message according to the path check result
+         * If there is no path, add the letter "no"
+         * */
+        printf("There is %spath from index %d to index %d \n", ((path(mat, u, v)) ? "" : "NO "), u,
+               v);
+        printf("Enter 2 indexes to check if there is path between them\n");
+    }
+}
+
+/*The function get adjmat matrix and two indexes and check if there is path between them*/
+int path(adjmat mat, int u, int v) {
+    int i;
+
+    /*Check if the index's are valid*/
+    if (!checkInRange(u, v))
+        return FALSE;
+
+    /*Check if we got to the index.
+     * Meaning - there is path
+     * */
+    if (u == v)
+        return TRUE;
+
+    /*
+     * Go through the matrix and try another way to create a path
+     * */
+    for (i = 0; i < N; i++) {
+
+        /*Checking there is path from u to i and from i to v
+         * Meaning - there is path from u to v
+         * */
+        if (u != i && mat[u][i] && path(mat, i, v))
+            return TRUE;
+    }
+    return FALSE;
+}
